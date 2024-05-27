@@ -13,7 +13,7 @@ const SingleBlog = () => {
 
   useEffect(()=>{
       const fetchSingleBlog = async()=>{
-        const res = await axios.get(`http://localhost:9000/api/v1/get/blog/${id}`,{
+        const res = await axios.get(`https://mern-blog-app-lhql.onrender.com/api/v1/get/blog/${id}`,{
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -31,7 +31,7 @@ const SingleBlog = () => {
           <div className="row">
                <h1 className='my-3'>{blog.title}</h1>
                <p>Published Date: </p>
-               <img  src={`http://localhost:9000/${blog.thumbnail}`}  
+               <img  src={`https://mern-blog-app-lhql.onrender.com/${blog.thumbnail}`}  
                  className='img img-responsive img-rounded my-3'
                  alt='thmbnail'
                />

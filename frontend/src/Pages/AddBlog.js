@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { FaTrash } from 'react-icons/fa'; // Import delete icon
+import "../styles/AddBlog.css"
 
 const AddBlog = () => {
   const navigate = useNavigate();
@@ -10,22 +12,25 @@ const AddBlog = () => {
     description: '',
     category: '',
   });
- 
 
-  const [file, setFile] = useState([]);
+  const [file, setFile] = useState(null);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchAllCategories = async () => {
-      const res = await axios.get(
-        "http://localhost:9000/api/v1/get/categories",
-        {
-          headers: {
-            Authorization  : `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setCategories(res.data);
+      try {
+        const res = await axios.get(
+          "https://mern-blog-app-lhql.onrender.com/api/v1/get/categories",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setCategories(res.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error.response?.data?.message || error.message);
+      }
     };
     fetchAllCategories();
   }, []);
@@ -40,7 +45,7 @@ const AddBlog = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:9000/api/v1/add/blog",
+        "https://mern-blog-app-lhql.onrender.com/api/v1/add/blog",
         formdata,
         {
           headers: {
@@ -48,29 +53,34 @@ const AddBlog = () => {
           },
         }
       );
-
       alert(res.data.message);
       navigate("/");
     } catch (error) {
-      alert(error.response.data.message);
+      alert(error.response?.data?.message || error.message);
     }
   };
 
-
-  const remove =(id)=>{
-    const newcategory = categories.filter((elem,item)=>{
-      return id!== item.id;
-    })
-    setCategories(newcategory);
-  }
+  const handleDeleteCategory = async (id) => {
+    try {
+      await axios.delete(`http://localhost:9000/api/v1/category/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setCategories(categories.filter(category => category._id !== id));
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      alert(error.response?.data?.message || error.message);
+    }
+  };
 
   return (
     <div>
       <div className="container shadow">
-        <h2 className="text-center my-3"> Add a New Blog </h2>
+        <h2 className="text-center my-3">Add a New Blog</h2>
         <div className="col-xl-12 my-3 d-flex items-center justify-content-center">
           <div className="row">
-            <form onSubmit={handleAddBlog} >
+            <form onSubmit={handleAddBlog}>
               <div className="mb-3">
                 <label htmlFor="formGroupExampleInput" className="form-label">
                   Title
@@ -95,22 +105,17 @@ const AddBlog = () => {
                 <select
                   className="form-control"
                   name="category"
+                  value={input.category}
                   onChange={(e) =>
                     setInput({ ...input, [e.target.name]: e.target.value })
                   }
                 >
-                  <option disabled>Select Category</option>
-                  {categories &&
-                    categories.map((item, id) => {
-                      return (
-                        <>
-                          <option value={item._id} key={id}>
-                            {item.title}
-                          </option>
-                          <button onClick={()=> remove(item.id)} style={{color:"red"}}>X</button>
-                        </>
-                      );
-                    })}
+                  <option value="" disabled>Select Category</option>
+                  {categories.map((item) => (
+                    <option key={item._id} value={item._id}>
+                      {item.title}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -139,7 +144,7 @@ const AddBlog = () => {
                   onChange={(e) => setFile(e.target.files[0])}
                   className="form-control"
                   id="formGroupExampleInput"
-                  placeholder="select thumbnail"
+                  placeholder="Select thumbnail"
                 />
               </div>
 
@@ -147,6 +152,35 @@ const AddBlog = () => {
                 <button type="submit" className="btn btn-primary btn-block">
                   Add Blog
                 </button>
+              </div>
+
+
+              <div className="mb-3">
+                <label htmlFor="formGroupExampleInput" className="form-label">
+                  Category
+                </label>
+                <div className="table-responsive">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Title</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {categories.map((category) => (
+                        <tr key={category._id}>
+                          <td>{category.title}</td>
+                          <td>
+                            <button type="button" className="btn btn-danger" onClick={() => handleDeleteCategory(category._id)}>
+                              <FaTrash />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </form>
           </div>

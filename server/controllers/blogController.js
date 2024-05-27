@@ -53,6 +53,27 @@ class BlogController
 
      }
 
+
+
+     static deleteBlog = async (req, res) => {
+          const { id } = req.params;
+          try {
+            if (id) {
+              const deletedBlog = await blogModel.findByIdAndDelete(id);
+              if (deletedBlog) {
+                return res.status(200).json({ message: "blog deleted successfully" });
+              } else {
+                return res.status(404).json({ message: "blog not found" });
+              }
+            } else {
+              return res.status(400).json({ message: "invalid url" });
+            }
+          } catch (error) {
+            return res.status(400).json({ message: error.message });
+          }
+        };
+
+
  }
 
  export default BlogController

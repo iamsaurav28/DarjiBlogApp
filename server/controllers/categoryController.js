@@ -36,6 +36,17 @@ static addNewCategory = async(req,res)=>{
 
 }
 
+static deleteCategory = async (req, res) => {
+     const { id } = req.params;
+     try {
+       await categoryModel.findByIdAndDelete(id);
+       return res.status(200).json({ message: "Category deleted successfully" });
+     } catch (error) {
+       return res.status(400).json({ message: error.message });
+     }
+   };
+   
+
 
 }
 

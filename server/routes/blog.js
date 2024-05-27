@@ -24,11 +24,16 @@ router.post("/user/login", AuthController.userLogin);
 router.get("/get/allblogs" , checkIsUserAuthenticated, BlogController.getAllBlogs)
 router.post("/add/blog",upload.single("thumbnail") , checkIsUserAuthenticated, BlogController.addNewBlog)
 router.get("/get/blog/:id", checkIsUserAuthenticated,  BlogController.getSingleBlog)
+router.delete('/blog/:id', checkIsUserAuthenticated, BlogController.deleteBlog); 
 
 router.get('/get/categories' , checkIsUserAuthenticated, CategoryController.getAllCategories)
 router.post('/add/category' , checkIsUserAuthenticated, CategoryController.addNewCategory)
+router.delete('/category/:id', checkIsUserAuthenticated, CategoryController.deleteCategory); 
 
 export default router;
+
+
+
 
 
 

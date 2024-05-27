@@ -13,7 +13,7 @@ const AddCategory = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:9000/api/v1/add/category",
+        "https://mern-blog-app-lhql.onrender.com/api/v1/add/category",
         Input,
         {
           headers: {
